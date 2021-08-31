@@ -1,0 +1,138 @@
+<!--<div class="p-grid p-align-start vertical-container" style="margin-top: 0.5em !important;">-->
+    <div class="p-col-12">
+
+        <p-table #dtCursos  [value]="cursos" [lazy]="true" (onLazyLoad)="consumeApi($event)" [responsive]="true"
+                 [paginator]="true" [rows]="10" [totalRecords]="totalRegistros"
+                 [(selection)]="cursoSeleccionado"
+                 [rowsPerPageOptions]="[5,10,25,50,100]" dataKey="id"
+        >
+            <ng-template pTemplate="caption">
+                <div class="p-d-flex p-ai-center p-jc-between">
+                    <div class="p-toolbar-group-left ng-star-inserted">
+                        <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success p-mr-2" (click)="showDialogToAdd()"></button>
+                    </div>
+                    <span class="p-input-icon-left">
+                        <i class="pi pi-search"></i>
+                        <input placeholder="Busqueda global" type="text" pInputText size="50"  (input)="dtCursos.filterGlobal($event.target.value, 'contains')" style="width:auto" />
+                    </span>
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>
+                        Nombre
+                    </th>
+                    <th>
+                        Descripción
+                    </th>
+                    <th>
+                        Fecha Inicial
+                    </th>
+                    <th>
+                        Fecha Final
+                    </th>
+                    <th>
+                        Opciones
+                    </th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-curso="rowData"  let-columns="columns" let-rowIndex="rowIndex">
+                <tr>
+                    <td>
+                        {{rowData.nombre}}
+                    </td>
+                    <td>
+                        {{rowData.descripcion}}
+                    </td>
+                    <td>
+                        {{dateCurrentFormat(rowData.fechaInicio)}}
+                    </td>
+                    <td>
+                        {{dateCurrentFormat(rowData.fechaFin)}}
+                    </td>
+                    <td>
+                        <button pButton pRipple type="button" icon="pi pi-pencil" pTooltip="Editar" (click)="onRowSelect(rowData)" class="p-button-rounded p-button-warning p-mr-2" tooltipPosition="top"></button>
+                        <button pButton pRipple type="button" icon="pi pi-trash" pTooltip="Eliminar" (click)="deleteRowSelected(rowData)" class="p-button-rounded p-button-danger" tooltipPosition="top"></button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="summary">
+                Mostrando {{cursos?.length}} Registros de {{totalRegistros}}
+            </ng-template>
+        </p-table>
+    </div>
+<!--</div>-->
+
+<p-sidebar [(visible)]="displayModalCurso"  [style]="{'overflow':'visible'}"
+           position="right" styleClass="p-sidebar-md">
+    <div class="card">
+        <h3>Add New Course</h3>
+        <div class="p-fluid p-formgrid p-grid">
+            <!--<div className="p-field p-col-12 p-md-12">-->
+                <!---->
+            <!--</div>-->
+                <div class="p-field p-col-12 p-md-6">
+                    <span class="p-float-label">
+                        <input id="txtNombre" type="text" pInputText [(ngModel)]="curso.nombre">
+                        <label for="txtNombre">Nombre</label>
+                    </span>
+                </div>
+                <div class="p-field p-col-12 p-md-6">
+                    <span class="p-float-label">
+                        <input id="txtDesc" type="text"  pInputText [(ngModel)]="curso.descripcion">
+                        <label for="txtDesc">Descripcion</label>
+                    </span>
+                </div>
+                <div class=" p-field p-col-12 p-md-6">
+                   <span class="p-float-label" style="margin-top: 10px;">
+
+                            <p-calendar [minDate]=""  [maxDate]=""
+                                        hourFormat="12" showIcon="true"
+                                        appendTo="" [locale]="es"
+                                        showButtonBar="true" [readonlyInput]="true"
+                                        dateFormat="yy-mm-dd"
+                                        [(ngModel)]="curso.fechaInicio"
+                                        [monthNavigator]="true"
+                                        [yearNavigator]="true"
+                                        yearRange="1800:2100"></p-calendar>
+
+                           <label for="">Fecha Inicial</label>
+                      </span>
+                </div>
+                <div class="p-field p-col-12 p-md-6">
+                       <span class="p-float-label" style="margin-top: 10px;">
+
+                            <p-calendar
+                                        hourFormat="12" showIcon="true"
+                                        appendTo="" [locale]="es"
+                                        showButtonBar="true" [readonlyInput]="true"
+                                        dateFormat="yy-mm-dd"
+                                        [(ngModel)]="curso.fechaFin"
+                                        [monthNavigator]="true"
+                                        [yearNavigator]="true"
+                                        yearRange="1800:2100"></p-calendar>
+
+                           <label for="">Fecha Final</label>
+                      </span>
+                </div>
+                <!--<div class="p-field p-col-12 p-md-12">-->
+                    <!--<button type="button" pButton icon="pi pi-check" (click)="save()" label="Aceptar" class="ui-button-success"></button>-->
+                    <!--<button type="button" pButton icon="pi pi-close" (click)="displayDialog=false" label="Cancelar" class="ui-button-secondary"></button>-->
+                <!--</div>-->
+
+            <div class="p-field p-col-12 p-md-6">
+                <!--<Button type="button" className="p-button-success" style={{marginRight:'.25em'}} />-->
+                <button type="button" pButton icon="pi pi-check" (click)="save()" label="Aceptar" class="p-button-success p-button-outlined"></button>
+
+            </div>
+            <div class="p-field p-col-12 p-md-6">
+                <!--<Button type="button" onClick={hideDialog} label="Cancel" className="p-button-secondary"/>-->
+                <button type="button" pButton icon="pi pi-close" (click)="displayModalCurso=false" label="Cancelar" class="p-button-secondary p-button-outlined"></button>
+
+            </div>
+
+        </div>
+    </div>
+</p-sidebar>
+

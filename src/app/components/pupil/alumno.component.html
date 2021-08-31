@@ -1,0 +1,267 @@
+<div style="margin-top: 0.5em !important;"
+     styleClass="p-grid p-align-start vertical-container p-datatable-responsive-demo">
+    <div class="p-col-12">
+        <p-table [columns]="selectedColumns" #dtRegistros [value]="registros" [lazy]="true"
+                 (onLazyLoad)="consumeApi($event)"
+                 [paginator]="true" [rows]="10"
+                 [totalRecords]="totalRegistros"
+                 [(selection)]="registroSeleccionado"
+                 [rowsPerPageOptions]="[5,10,25,50,100]" dataKey="id"
+                 (sortFunction)="customSort($event)" [customSort]="true"
+                 styleClass="p-datatable-gridlines"
+        >
+            <ng-template pTemplate="caption">
+                <div class="p-formgrid p-grid">
+                    <div class="p-field p-col-6 p-text-left">
+                        <button pButton (click)="showDialogToAdd()" type="button" icon="pi pi-plus" label="Nuevo"
+                                class="ui-button-rounded ui-button-success"></button>
+                        <button type="button" pButton icon="pi pi-file-excel" iconPos="left" label="Exportar a Excel"
+                                class="ui-button-rounded ui-button-success" (click)="dtRegistros.exportCSV()"></button>
+                    </div>
+                    <div class="p-field p-col-6 p-text-right">
+                        <div class="ui-inputgroup">
+
+                            <input placeholder="Busqueda global" id="txtSearch" type="text" pInputText size="50"
+                                   (input)="dtRegistros.filterGlobal($event.target.value, 'contains')"
+                                   style="width:auto">
+
+                        </div>
+                    </div>
+
+                </div>
+            </ng-template>
+            <!--<ng-template pTemplate="colgroup">-->
+            <!--<colgroup>-->
+            <!--<col style="width:15%">-->
+            <!--<col style="width:15%">-->
+            <!--<col style="width:5%">-->
+            <!--<col style="width:10%">-->
+            <!--<col style="width:10%">-->
+            <!--<col style="width:10%">-->
+            <!--<col style="width:5%">-->
+            <!--<col style="width:10%">-->
+            <!--<col style="width:10%">-->
+            <!--<col style="width:10%">-->
+            <!--</colgroup>-->
+            <!--</ng-template>-->
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width:15%" pSortableColumn="nombre">Nombre
+                        <p-sortIcon field="code"></p-sortIcon>
+                    </th>
+                    <th style="width:15%">Dirección</th>
+                    <th style="width:5%">Edad</th>
+                    <th style="width:8%">Telefono</th>
+                    <th style="width:9%">Nacimiento</th>
+                    <th style="width:9%">Curp</th>
+                    <th style="width:10%">Sexo</th>
+                    <th style="width:12%">Correo</th>
+                    <th style="width:10%">Beca</th>
+                    <th style="width:8%">Opciones</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-registro="rowData" let-columns="columns"
+                         let-rowIndex="rowIndex">
+                <tr>
+                    <td>
+                        {{rowData.nombre}} {{rowData.apePaterno}} {{rowData.apeMaterno}}
+                    </td>
+                    <td>
+                        {{rowData.direccion}}
+                    </td>
+                    <td>
+                        {{rowData.edad}}
+                    </td>
+                    <td>
+                        {{rowData.telefono}}
+                    </td>
+                    <td>
+                        {{forMatCustomDate(rowData.fechaNacimiento)}}
+                    </td>
+                    <td>
+                        {{rowData.curp}}
+                    </td>
+                    <td>
+                        <div style="padding: .5em 1em; display: flex;flex-direction: column; align-items: center;">
+                            <img style="vertical-align: middle; margin-right: .5em" height="20px"
+                                 src="assets/images/avatar/{{rowData.sexo === 'Masculino' ? 'boy.png': rowData.sexo === 'Femenino' ? 'girl.png':'' }}">
+                            <span>{{rowData.sexo}}</span>
+                        </div>
+                    </td>
+                    <td>
+                        {{rowData.correo}}
+                    </td>
+
+                    <td>
+                        {{rowData.beca}}
+                    </td>
+                    <!--<td>-->
+                    <!--{{rowData.segurosocial}}-->
+                    <!--</td>-->
+                    <td>
+                        <!--<button pButton type="button" icon="pi pi-pencil" pTooltip="Editar" (click)="onRowSelect(rowData)" class="ui-button-rounded ui-button-warning btn-sm" tooltipPosition="top"></button>-->
+                        <!--<button pButton type="button" icon="pi pi-trash" pTooltip="Eliminar" (click)="deleteRowSelected(rowData)" class="ui-button-rounded ui-button-danger btn-sm" tooltipPosition="top"></button>-->
+
+
+                        <button pButton pRipple icon="pi pi-pencil" pTooltip="Editar"
+                                class="p-button-rounded p-button-success p-mr-2" (click)="onRowSelect(rowData)"
+                                tooltipPosition="top"></button>
+                        <button pButton pRipple icon="pi pi-trash" pTooltip="Eliminar"
+                                class="p-button-rounded p-button-warning" (click)="deleteRowSelected(rowData)"
+                                tooltipPosition="top"></button>
+
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="summary">
+                Mostrando {{registros?.length}} Registros de {{totalRegistros}}
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+
+<p-sidebar [(visible)]="displayDialog" [style]="{'overflow':'visible'}" position="right" styleClass="p-sidebar-md">
+    <div class="card">
+        <p-card>
+            <ng-template pTemplate="header">
+                <h3>Nuevo Alumno</h3>
+            </ng-template>
+            <div class="p-fluid p-formgrid p-grid">
+                <div class="p-field p-col-6">
+                   <span class="p-float-label" style="margin-top: 10px;">
+                    <input class="text-uppercase" id="txtName" type="text" size="30" pInputText
+                           [(ngModel)]="registro.nombre">
+                    <label for="txtName">Nombre(s)</label>
+                  </span>
+                </div>
+                <div class="p-field p-col-3">
+
+                       <span class="p-float-label" style="margin-top: 10px;">
+                        <input class="text-uppercase" id="txtApePaterno" type="text" size="30" pInputText
+                               [(ngModel)]="registro.apePaterno">
+                        <label for="txtApePaterno">Apellido Paterno</label>
+                      </span>
+
+                </div>
+                <div class="p-field p-col-3">
+
+                       <span class="p-float-label" style="margin-top: 10px;">
+                        <input class="text-uppercase" id="txtApeMaterno" type="text" size="30" pInputText
+                               [(ngModel)]="registro.apeMaterno">
+                        <label for="txtApeMaterno">Apellido Materno</label>
+                      </span>
+
+                </div>
+
+                <div class="p-field p-col-9">
+
+                       <span class="p-float-label" style="margin-top: 10px;">
+                        <input class="text-uppercase" id="txtDireccion" type="text" size="30" pInputText
+                               [(ngModel)]="registro.direccion">
+                        <label for="txtDireccion">Dirección</label>
+                      </span>
+
+                </div>
+                <div class="p-field p-col-3">
+
+                       <span class="p-float-label" style="margin-top: 10px;">
+                        <input id="txtEdad" type="text" size="30" pInputText [(ngModel)]="registro.edad">
+                        <label for="txtEdad">Edad</label>
+                      </span>
+
+                </div>
+
+                <div class="p-field p-col-6">
+
+                       <span class="p-float-label" style="margin-top: 10px;">
+                        <input id="txtCorreo" type="text" size="30" pInputText [(ngModel)]="registro.correo">
+                        <label for="txtCorreo">Correo</label>
+                      </span>
+
+                </div>
+                <div class="p-field p-col-6">
+
+                       <span class="p-float-label" style="margin-top: 10px;">
+                        <input id="txtTelefono" type="text" size="30" pInputText [(ngModel)]="registro.telefono">
+                        <label for="txtTelefono">Telefono</label>
+                      </span>
+
+                </div>
+
+
+                <div class="p-field p-col-5">
+
+                       <span class="p-float-label" style="margin-top: 10px;">
+
+                            <p-calendar
+                                    hourFormat="12" showIcon="true"
+                                    appendTo="" [locale]="es"
+                                    showButtonBar="true" [readonlyInput]="true"
+                                    dateFormat="yy-mm-dd"
+                                    [(ngModel)]="registro.fechaNacimiento"
+                                    [monthNavigator]="true"
+                                    [yearNavigator]="true"
+                                    yearRange="1800:2100"></p-calendar>
+
+                           <label for="">Fecha de Nacimiento</label>
+                      </span>
+
+                </div>
+                <div class="p-field p-col-5">
+
+                           <span class="p-float-label" style="margin-top: 10px;">
+                            <input class="text-uppercase" id="txtCURP" type="text" size="30" pInputText
+                                   [(ngModel)]="registro.curp">
+                            <label for="txtCURP">CURP:</label>
+                          </span>
+
+                </div>
+                <div class="p-field p-col-2">
+
+                       <span class="p-float-label" style="margin-top: 10px;">
+                        <input id="txtBeca" type="text" size="30" pInputText [(ngModel)]="registro.beca">
+                        <label for="txtBeca">Beca %</label>
+                      </span>
+
+                </div>
+
+                <div class="p-field p-col-8">
+                    <div class="modal-pupil" style="margin-top: -10px">
+                        <label for="txtGenero" style="font-size: 11px">Genero</label>
+
+                        <p-selectButton style="padding: 0px" [options]="sexoList" [(ngModel)]="sexoSeleccionado"
+                                        optionLabel="name">
+                            <ng-template let-item>
+                                <div style="padding: .5em 1em">
+                                    <img style="vertical-align: middle; margin-right: .5em"
+                                         src="assets/images/avatar/{{item.value.avatar}}" height="20px"/>
+                                    <span>{{item.value.name}}</span>
+                                </div>
+                            </ng-template>
+                        </p-selectButton>
+                    </div>
+                </div>
+                <div class="p-field p-col-4">
+
+                       <span class="p-float-label" style=" margin-top: 10px;">
+                        <input id="txtSeguroSocial" type="text" size="30" pInputText
+                               [(ngModel)]="registro.segurosocial">
+                        <label for="txtSeguroSocial">SeguroSocial</label>
+                      </span>
+
+                </div>
+
+            </div>
+            <ng-template pTemplate="footer">
+                <div [ngStyle]="{'text-align':'right'}">
+                    <button type="button" pButton pRipple icon="pi pi-check" (click)="save()" label="Aceptar"
+                            class="p-button-outlined p-button-success"></button>
+
+                    <button type="button" pButton pRipple icon="pi pi-close" (click)="displayDialog=false"
+                            label="Cancelar" class="p-button-outlined p-button-danger"></button>
+                </div>
+            </ng-template>
+        </p-card>
+    </div>
+</p-sidebar>

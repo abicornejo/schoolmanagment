@@ -1,0 +1,62 @@
+
+@media (min-width: 992px) {
+  .icon-padding {
+    padding: 10px;
+  }
+}
+@media (min-width: 768px) {
+  .navbar-linio .header-icons-row .icon-padding {
+    padding: 12px;
+  }
+}
+@media (min-width: 992px) {
+  .navbar-linio .header-icons-row .icon, .navbar-linio .header-icons-row .toggle-whatsapp > span:before {
+    font-size: 36px;
+  }
+}
+
+.quantity-icon-wrapper {
+  text-align: center;
+}
+
+.quantity-icon-wrapper {
+  display: inline-block;
+  position: relative;
+}
+
+.quantity-icon {
+  cursor: pointer;
+  left: 40px;
+  line-height: 14px;
+  top: 8px;
+}
+.quantity-icon-notification {
+  background-color: #fff;
+  color: #455a64;
+}
+.quantity-icon-notification {
+  background-color: #f50;
+  color: #fff;
+  display: block;
+  position: absolute;
+  top: 4px;
+  left: 24px;
+  line-height: 14px;
+  box-shadow: 0 0 0 2px #3d3d3d;
+  padding: 1px 5px;
+  opacity: 1;
+  transition: opacity .5s linear;
+}
+.quantity-icon {
+  height: 16px;
+  min-width: 16px;
+  padding: 0 8px;
+  text-align: center;
+  background-color: #f7f7f7;
+  font-family: Arial,Roboto,"-apple-system",Helvetica,sans-serif;
+  font-size: 11px;
+  color: #aaa;
+  border-radius: 20px;
+  line-height: 16px;
+  font-weight: 400;
+}
